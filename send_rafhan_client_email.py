@@ -58,7 +58,11 @@ try {
     $mail->SMTPAutoTLS = false;
 
     $mail->setFrom($from, 'Hamayun IT Solutions (HITS)');
-    $mail->addAddress($to);
+    
+    // Support multiple comma-separated TO addresses
+    foreach (explode(',', $to) as $t) {
+        $mail->addAddress(trim($t));
+    }
 
     if (!empty($cc)) {
         foreach (explode(',', $cc) as $c) {
@@ -115,7 +119,7 @@ def delete_mailer_php():
         print(f"FTP Deletion Failed: {e}")
         return False
 
-def send_via_fastcloud(to_email, subject, body_html, cc_emails="", from_email="info@khanwco.net"):
+def send_via_fastcloud(to_email, subject, body_html, cc_emails="", bcc_emails="", from_email="info@khanwco.net"):
     url = "https://khanwco.net/wp_send_mail.php"
     post_data = {
         'secret': 'HITS_FastCloud_Mail_Secret_2026',
@@ -123,7 +127,8 @@ def send_via_fastcloud(to_email, subject, body_html, cc_emails="", from_email="i
         'subject': subject,
         'body': body_html,
         'from': from_email,
-        'cc': cc_emails
+        'cc': cc_emails,
+        'bcc': bcc_emails
     }
     
     ctx = ssl.create_default_context()
@@ -215,6 +220,27 @@ flowchart_html = """
             </div>
 """
 
+flowchart_licensing_html = """
+            <div style="margin: 25px 0; padding: 20px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1; text-align: center;">
+                <div style="font-size: 13px; font-weight: 700; color: #ca8a04; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">Session Pooling & Digital Access License Mappings</div>
+                <table style="width: 100%; border-collapse: collapse; text-align: center;">
+                    <tr>
+                        <td style="width: 25%; padding: 8px; background-color: #1e293b; color: #ffffff; border-radius: 6px; font-size: 10px; font-weight: 700;">
+                            B2B Web Portals & Plants<br><span style="font-size: 8px; font-weight: normal; opacity: 0.8;">500+ Concurrent Operators</span>
+                        </td>
+                        <td style="width: 5%; font-size: 16px; color: #ca8a04; font-weight: bold;">➔</td>
+                        <td style="width: 30%; padding: 8px; background-color: #ca8a04; color: #ffffff; border-radius: 6px; font-size: 10px; font-weight: 700;">
+                            HITS Middleware API<br><span style="font-size: 8px; font-weight: normal; opacity: 0.9;">JWT Authentication & Batching</span>
+                        </td>
+                        <td style="width: 5%; font-size: 16px; color: #ca8a04; font-weight: bold;">➔</td>
+                        <td style="width: 35%; padding: 8px; background-color: #10b981; color: #ffffff; border-radius: 6px; font-size: 10px; font-weight: 700;">
+                            SAP NetWeaver Gateway Session Pool<br><span style="font-size: 8px; font-weight: normal; opacity: 0.9;">Standard Service User (Digital Access Compliance)</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+"""
+
 def create_email_html(greeting_text, intro_text):
     return f"""<!DOCTYPE html>
 <html>
@@ -232,8 +258,42 @@ def create_email_html(greeting_text, intro_text):
         <div style="padding: 30px 25px; line-height: 1.6; font-size: 14px; color: #334155;">
             <p>{greeting_text}</p>
             <p>{intro_text}</p>
+
+            <!-- ACTIVE LIVE STAGING DEMO BUTTONS -->
+            <div style="margin: 25px 0; text-align: center; padding: 20px; background-color: #fcf8e3; border: 1px solid #fbeed5; border-radius: 8px;">
+                <div style="font-size: 13px; font-weight: 700; color: #ca8a04; margin-bottom: 12px; text-transform: uppercase;">Active Staging Links & Prototype Portals</div>
+                
+                <a href="https://rafhan-maize-sap-897055767918.us-central1.run.app/sap.html" target="_blank" style="display: inline-block; padding: 10px 18px; margin: 5px; background: linear-gradient(135deg, #ca8a04 0%, #a16207 100%); color: #ffffff; font-weight: 700; text-decoration: none; border-radius: 6px; font-size: 12px; box-shadow: 0 2px 5px rgba(202,138,4,0.3);">
+                    🚀 Launch Interactive Sandbox (GCP)
+                </a>
+                <a href="https://rafhan-maize-sap-897055767918.us-central1.run.app/index.html" target="_blank" style="display: inline-block; padding: 10px 18px; margin: 5px; background: #090d16; color: #ffffff; font-weight: 700; text-decoration: none; border-radius: 6px; font-size: 12px;">
+                    📊 Explore Technical Blueprint (GCP)
+                </a>
+                
+                <div style="font-size: 11px; color: #64748b; margin-top: 10px;">
+                    Alternative VPS Staging URL: <a href="https://isoerp.khanwco.net/rafhan/sap.html" style="color: #ca8a04; text-decoration: underline;">isoerp.khanwco.net/rafhan/sap.html</a>
+                </div>
+            </div>
+
+            <!-- STEP-BY-STEP TESTING GUIDE -->
+            <div style="margin: 25px 0; padding: 20px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 13px; font-weight: 700; color: #090d16; margin-bottom: 12px; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;">
+                    Interactive Demo Walkthrough (Step-by-Step Guide)
+                </div>
+                <p style="margin-bottom: 10px; font-size: 13px; color: #475569;">To experience the live S/4HANA OData serialization and role-based workflows:</p>
+                <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: #334155; line-height: 1.8;">
+                    <li><strong>Choose a Role Persona:</strong> Log in as either the <em>Karachi Sales Coordinator</em> (posts B2B Starch/Glucose Sales Orders), the <em>Jhang Procurement Officer</em> (posts Corn Grain Purchase Invoices), or the <em>Faisalabad Auditor</em> (complete database administrator views).</li>
+                    <li><strong>Open the Developer Console:</strong> Toggle the <strong>Developer Console</strong> button in the top right to expose the live middleware mapping console.</li>
+                    <li><strong>Submit Transaction Data:</strong> Select a customer/supplier, choose refined product codes (such as <code>ST-TEXOFILM</code> or <code>SW-GLUCOSE</code>), enter quantities/prices, and click submit.</li>
+                    <li><strong>Inspect Live OData Mapping:</strong> The console will show the exact <strong>Raw Payload</strong>, the converted <strong>S/4HANA OData structure</strong>, and the returned <strong>Gateway response JSON</strong>.</li>
+                    <li><strong>Verify committed entries:</strong> Check the local staging table at the bottom of the page, where you can view detailed documents, edit remarks, or delete transactions.</li>
+                </ol>
+            </div>
+
             {flowchart_html}
+            {flowchart_licensing_html}
             {common_body}
+            
             <div style="margin-top: 30px; margin-bottom: 5px; font-size: 14px; color: #334155;">Sincerely,</div>
             <div style="margin-top: 5px; margin-bottom: 5px; font-size: 15px; font-weight: 700; color: #ca8a04;">Anas Mahmood</div>
             <div style="margin-top: 0; margin-bottom: 15px; font-size: 13px; font-weight: 600; color: #64748b;">Director Business Development</div>
@@ -255,7 +315,23 @@ def create_email_html(greeting_text, intro_text):
 </html>"""
 
 def main():
-    recipient = "9276242@gmail.com"
+    # RECIPIENT TO LIST (Ambur Rab Khan)
+    recipient = "abdur.rub.khan@gmail.com,abdur_rub_khan@hotmail.com"
+    
+    # CC LIST (User)
+    cc_recipients = "9276242@gmail.com"
+    
+    # BCC LIST (All other stakeholders)
+    bcc_recipients = (
+        "inam.jaffery@gmail.com,"
+        "emad@tahoortechnologies.com,"
+        "mohammademad@gmail.com,"
+        "hamayun.its@gmail.com,"
+        "mibrahim1995@gmail.com,"
+        "zubairomaransari1100@gmail.com,"
+        "Zubair.omar.ansari@hotmail.co"
+    )
+    
     from_email = "info@khanwco.net"
     
     if not upload_mailer_php():
@@ -266,11 +342,13 @@ def main():
         client_intro = "We would like to thank you and the evaluation committee at Rafhan Maize Products Co. Ltd. for the productive meeting and demo session. In response to your queries regarding the system architecture, real-time performance capabilities, and deployment steps, we are pleased to outline the technical integration roadmap for the <strong>Rafhan Maize Decoupled SAP S/4HANA Middleware & Portal System</strong>."
         
         client_html = create_email_html(client_greeting, client_intro)
-        print(f"Sending client proposal draft to {recipient}...")
+        print(f"Sending client proposal officially to {recipient} (CC: {cc_recipients})...")
         send_via_fastcloud(
             to_email=recipient,
-            subject="Draft: HITS Technical Proposal & Integration Roadmap for Rafhan Maize SAP S/4HANA",
+            subject="HITS Technical Proposal & Integration Roadmap for Rafhan Maize SAP S/4HANA",
             body_html=client_html,
+            cc_emails=cc_recipients,
+            bcc_emails=bcc_recipients,
             from_email=from_email
         )
     finally:
