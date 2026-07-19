@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rafhan Maize SAP S/4HANA Integration Blueprint & Sandbox</title>
+    <meta name="description" content="Technical integration blueprint, OData API mappings, and interactive middleware sandbox connecting Rafhan Maize refining plants with SAP S/4HANA.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Mermaid.js for Diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            securityLevel: 'loose',
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+        });
+    </script>
+
+    <style>
+        :root {
+            /* Rafhan Maize Gold & Slate Theme */
+            --bg-primary: #090d16;
+            --bg-secondary: #111726;
+            --bg-tertiary: #1b2336;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #ca8a04; /* Corn Gold Accent */
+            --accent-glow: rgba(202, 138, 4, 0.15);
+            --accent-gradient: linear-gradient(135deg, #facc15 0%, #a16207 100%);
+            --border-color: #1e293b;
+            --border-hover: #334155;
+            
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.1);
+            --warning: #f59e0b;
+            --warning-glow: rgba(245, 158, 11, 0.1);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.1);
+            
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --accent: #ca8a04;
+            --accent-glow: rgba(202, 138, 4, 0.08);
+            --accent-gradient: linear-gradient(135deg, #eab308 0%, #854d0e 100%);
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Layout Structure */
+        aside {
+            width: 320px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding: 2.5rem 1.5rem;
+            overflow-y: auto;
+            z-index: 100;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            margin-left: 320px;
+            flex-grow: 1;
+            padding: 4rem 5%;
+            max-width: 1200px;
+            transition: var(--transition);
+        }
+
+        /* Sidebar Elements */
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+        }
+
+        .sidebar-logo svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--accent);
+        }
+
+        .sidebar-logo span {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .nav-item a:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-tertiary);
+        }
+
+        .nav-item.active a {
+            color: #ffffff;
+            background: var(--accent-gradient);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-toggle-container {
+            margin-top: auto;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .theme-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .theme-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Typography & Headings */
+        h1, h2, h3, h4 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 1.5rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-top: 4rem;
+            letter-spacing: -0.5px;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 2rem;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Cards & Content Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-md), 0 0 20px var(--accent-glow);
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-icon {
+            color: var(--accent);
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Beautiful Alerts */
+        .alert {
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            display: flex;
+            gap: 1.25rem;
+            border: 1px solid transparent;
+        }
+
+        .alert-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-content h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-caution {
+            background-color: var(--danger-glow);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+        .alert-caution .alert-icon, .alert-caution h4 {
+            color: var(--danger);
+        }
+
+        .alert-warning {
+            background-color: var(--warning-glow);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+        .alert-warning .alert-icon, .alert-warning h4 {
+            color: var(--warning);
+        }
+
+        .alert-success {
+            background-color: var(--success-glow);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .alert-success .alert-icon, .alert-success h4 {
+            color: var(--success);
+        }
+
+        .alert-info {
+            background-color: var(--accent-glow);
+            border-color: rgba(202, 138, 4, 0.2);
+        }
+        .alert-info .alert-icon, .alert-info h4 {
+            color: var(--accent);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+            background-color: var(--bg-secondary);
+        }
+
+        th, td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-tertiary);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: var(--bg-tertiary);
+        }
+
+        /* Code Blocks */
+        .code-container {
+            background-color: #040810;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin: 2rem 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            background-color: #0b101c;
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .code-lang {
+            text-transform: uppercase;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            padding: 0.35rem 0.75rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
+            background-color: var(--bg-tertiary);
+        }
+
+        pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Tabbed interface */
+        .tab-container {
+            margin: 2rem 0;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            background-color: var(--bg-secondary);
+        }
+
+        .tab-headers {
+            display: flex;
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background-color: var(--bg-secondary);
+        }
+
+        .tab-content {
+            padding: 2rem;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* CTA Button */
+        .cta-button-container {
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--accent-gradient);
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 15px var(--accent-glow);
+            transition: var(--transition);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(202, 138, 4, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Responsive Sidebar */
+        @media (max-width: 1024px) {
+            body {
+                flex-direction: column;
+            }
+            aside {
+                width: 100%;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 1.5rem;
+            }
+            main {
+                margin-left: 0;
+                padding: 2rem;
+            }
+            .sidebar-logo {
+                margin-bottom: 1.5rem;
+            }
+            .nav-list {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .theme-toggle-container {
+                margin-top: 1.5rem;
+                padding-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside>
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9z" />
+                <path d="M12 12l8 -4.5" />
+                <path d="M12 12v9" />
+                <path d="M12 12l-8 -4.5" />
+            </svg>
+            <span>Rafhan S/4HANA</span>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item active"><a href="#overview">Overview & Architecture</a></li>
+            <li class="nav-item"><a href="#licensing">SAP Digital Access Model</a></li>
+            <li class="nav-item"><a href="#odata-schemas">OData Schema Mapping</a></li>
+            <li class="nav-item"><a href="#sandbox-info">Integration Sandbox</a></li>
+        </ul>
+        <div class="theme-toggle-container">
+            <span class="theme-label">Active Mode</span>
+            <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle visual theme">
+                ☀️
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN BODY CONTENT -->
+    <main>
+        
+        <section id="overview">
+            <h1>SAP S/4HANA Gateway Integration Portal</h1>
+            <p>
+                Welcome to the official integration sandbox and architectural blueprint for **Rafhan Maize Products Co. Ltd.** This portal outlines the system designs, data schemas, security architectures, and compliance models utilized to connect Rafhan's agricultural refining workflows directly with the **SAP S/4HANA Core ERP** engine.
+            </p>
+            
+            <div class="alert alert-info">
+                <span class="alert-icon">ℹ️</span>
+                <div class="alert-content">
+                    <h4>API-First Architecture</h4>
+                    <p>Rafhan Maize avoids direct database modifications (`INSERT/UPDATE`) to protect standard S/4HANA structural rules. All data writes are executed through standard SAP NetWeaver Gateway OData services, fully preserving application audit trails.</p>
+                </div>
+            </div>
+
+            <h2>Architecture Overview</h2>
+            <p>
+                Industrial B2B sales orders originating from export teams and third-party supplier invoices are aggregated by the middleware, validated locally for schema correctness, and securely posted via HTTPS OAuth2 directly into SAP Gateway.
+            </p>
+
+            <div class="code-container" style="padding: 1.5rem; background-color: var(--bg-secondary);">
+                <div class="mermaid">
+                    graph TD
+                        A[Rafhan Maize Link / Portals] -->|HTTPS JSON| B(GCP Integration Middleware)
+                        B -->|OAuth2 OData Call| C[SAP NetWeaver Gateway]
+                        C -->|Internal RFC/BAPI| D[SAP S/4HANA Core]
+                        D -->|ACID Commit| E[(SAP HANA In-Memory DB)]
+                        
+                        style A fill:#1b2336,stroke:#ca8a04,stroke-width:2px,color:#fff
+                        style B fill:#ca8a04,stroke:#ca8a04,stroke-width:1px,color:#fff
+                        style C fill:#1b2336,stroke:#1e293b,color:#fff
+                        style D fill:#111726,stroke:#1e293b,color:#fff
+                        style E fill:#090d16,stroke:#10b981,stroke-width:2px,color:#fff
+                </div>
+            </div>
+        </section>
+
+        <!-- LICENSING SECTION -->
+        <section id="licensing">
+            <h2>SAP Digital Access Licensing Model</h2>
+            <p>
+                SAP S/4HANA enforces a modern **Digital Access** model for indirect application routing. This ensures that B2B customers placing starch or liquid glucose orders on external portals do NOT consume costly named-user licenses.
+            </p>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">
+                        📊 Document-Based Counts
+                    </div>
+                    <p style="font-size:0.9rem;">
+                        Licensing is audited strictly on the net count of core documents generated in SAP S/4HANA (e.g. Sales Orders, AP Invoices). 
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="card-title">
+                        🔒 Secure Service Users
+                    </div>
+                    <p style="font-size:0.9rem;">
+                        Connection to SAP Gateway is routed via standard role-restricted system users (`SERVICE` license types) utilizing OAuth2 scopes.
+                    </p>
+                </div>
+            </div>
+
+            <div class="alert alert-success">
+                <span class="alert-icon">✓</span>
+                <div class="alert-content">
+                    <h4>Audit Compliant Setup</h4>
+                    <p>By registering external client order transactions under the **SAP Digital Access** framework, Rafhan Maize maintains full compliance with SAP's global licensing auditors without needing to license individual B2B client accounts.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ODATA SCHEMAS SECTION -->
+        <section id="odata-schemas">
+            <h2>SAP S/4HANA OData Schema Mapping</h2>
+            <p>
+                The Integration Middleware maps client payloads into standard SAP OData structure representations of the core SAP tables.
+            </p>
+
+            <div class="tab-container">
+                <div class="tab-headers">
+                    <button class="tab-btn active" id="tab-btn-sales" onclick="switchTab('sales')">VBAK/VBAP (Sales Order)</button>
+                    <button class="tab-btn" id="tab-btn-purchase" onclick="switchTab('purchase')">RBKP/RSEG (AP Invoice)</button>
+                </div>
+
+                <!-- Sales Tab -->
+                <div class="tab-content active" id="tab-sales">
+                    <h4>Header Mapping: Entity A_SalesOrder (Table VBAK)</h4>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>OData Key</th>
+                                    <th>SAP Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Sales Order ID</td>
+                                    <td><code>SalesOrder</code></td>
+                                    <td>Edm.String (10)</td>
+                                    <td>Unique document number (Primary Key)</td>
+                                </tr>
+                                <tr>
+                                    <td>Order Type</td>
+                                    <td><code>SalesOrderType</code></td>
+                                    <td>Edm.String (4)</td>
+                                    <td>e.g., <code>TA</code> for Standard B2B Order</td>
+                                </tr>
+                                <tr>
+                                    <td>Sold-to Party</td>
+                                    <td><code>SoldToParty</code></td>
+                                    <td>Edm.String (10)</td>
+                                    <td>Customer Account Code (KNA1 / BUT000)</td>
+                                </tr>
+                                <tr>
+                                    <td>Posting Date</td>
+                                    <td><code>SalesOrderDate</code></td>
+                                    <td>Edm.DateTime</td>
+                                    <td>Posting Date of document</td>
+                                </tr>
+                                <tr>
+                                    <td>Doc Currency</td>
+                                    <td><code>TransactionCurrency</code></td>
+                                    <td>Edm.String (5)</td>
+                                    <td>Currency code (USD, PKR, EUR)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4>Line Mapping: Entity A_SalesOrderItem (Table VBAP)</h4>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>OData Key</th>
+                                    <th>SAP Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Line Number</td>
+                                    <td><code>SalesOrderItem</code></td>
+                                    <td>Edm.String (6)</td>
+                                    <td>Item row index (e.g., <code>000010</code>)</td>
+                                </tr>
+                                <tr>
+                                    <td>Material Code</td>
+                                    <td><code>Material</code></td>
+                                    <td>Edm.String (40)</td>
+                                    <td>Refined Corn SKU (MARA table lookup)</td>
+                                </tr>
+                                <tr>
+                                    <td>Quantity</td>
+                                    <td><code>RequestedQuantity</code></td>
+                                    <td>Edm.Decimal (15,3)</td>
+                                    <td>Requested order qty</td>
+                                </tr>
+                                <tr>
+                                    <td>Unit Price</td>
+                                    <td><code>NetPriceAmount</code></td>
+                                    <td>Edm.Decimal (11,2)</td>
+                                    <td>Item price in Transaction Currency</td>
+                                </tr>
+                                <tr>
+                                    <td>Target Plant</td>
+                                    <td><code>ProductionPlant</code></td>
+                                    <td>Edm.String (4)</td>
+                                    <td>Plant code (<code>0101</code> Faisalabad, <code>0102</code> Jhang)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Purchase Tab -->
+                <div class="tab-content" id="tab-purchase">
+                    <h4>Header Mapping: Table RBKP (Incoming Invoice)</h4>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>OData Key</th>
+                                    <th>SAP Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Invoice ID</td>
+                                    <td><code>SupplierInvoice</code></td>
+                                    <td>Edm.String (10)</td>
+                                    <td>SAP Internal Document Number</td>
+                                </tr>
+                                <tr>
+                                    <td>Fiscal Year</td>
+                                    <td><code>FiscalYear</code></td>
+                                    <td>Edm.String (4)</td>
+                                    <td>Posting Year (e.g., 2026)</td>
+                                </tr>
+                                <tr>
+                                    <td>Vendor ID</td>
+                                    <td><code>InvoicingParty</code></td>
+                                    <td>Edm.String (10)</td>
+                                    <td>Supplier account code (LIFNR)</td>
+                                </tr>
+                                <tr>
+                                    <td>Document Date</td>
+                                    <td><code>DocumentDate</code></td>
+                                    <td>Edm.DateTime</td>
+                                    <td>Invoice document date</td>
+                                </tr>
+                                <tr>
+                                    <td>External Ref</td>
+                                    <td><code>DocumentHeaderText</code></td>
+                                    <td>Edm.String (25)</td>
+                                    <td>External vendor invoice number</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4>Line Mapping: Table RSEG (Invoice Document Items)</h4>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th>OData Key</th>
+                                    <th>SAP Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Item Number</td>
+                                    <td><code>SupplierInvoiceItem</code></td>
+                                    <td>Edm.String (4)</td>
+                                    <td>Line row position (e.g. <code>0001</code>)</td>
+                                </tr>
+                                <tr>
+                                    <td>Material Code</td>
+                                    <td><code>Material</code></td>
+                                    <td>Edm.String (40)</td>
+                                    <td>Raw Material SKU (e.g. Corn Grain, Chemical)</td>
+                                </tr>
+                                <tr>
+                                    <td>Quantity</td>
+                                    <td><code>QuantityInPurchaseOrderUnit</code></td>
+                                    <td>Edm.Decimal (13,3)</td>
+                                    <td>Supplied Quantity</td>
+                                </tr>
+                                <tr>
+                                    <td>Net Amount</td>
+                                    <td><code>SupplierInvoiceItemAmount</code></td>
+                                    <td>Edm.Decimal (13,2)</td>
+                                    <td>Net line total amount</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SANDBOX SECTION -->
+        <section id="sandbox-info">
+            <h2>Interactive Simulation Sandbox</h2>
+            <p>
+                We have prepared a complete interactive prototype modeling the Rafhan Maize S/4HANA integration. The sandbox simulates the role-based dashboard, middleware mapping, and OData transaction processing for sales and purchasing branches.
+            </p>
+
+            <div class="cta-button-container">
+                <a href="sap.html" class="cta-btn" id="launch-btn">
+                    🚀 Launch Interactive Sandbox
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            &copy; 2026 Rafhan Maize Products Co. Ltd. All rights reserved. Managed in partnership with Khan & Co. Enterprise Solutions.
+        </footer>
+    </main>
+
+    <script>
+        // Toggle theme (Dark / Light)
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            document.getElementById('theme-toggle').innerText = targetTheme === 'light' ? '🌙' : '☀️';
+        }
+
+        // Switch schema mapping tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.getElementById(`tab-btn-${tabId}`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+    </script>
+</body>
+</html>

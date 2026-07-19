@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Rafhan Maize SAP S/4HANA Interactive Prototype</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Rafhan Maize Gold & Slate Theme */
+            --bg-primary: #090d16;
+            --bg-secondary: #111726;
+            --bg-tertiary: #1b2336;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #ca8a04; /* Corn Gold Accent */
+            --accent-glow: rgba(202, 138, 4, 0.15);
+            --accent-gradient: linear-gradient(135deg, #facc15 0%, #a16207 100%);
+            --border-color: #1e293b;
+            --border-hover: #334155;
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.1);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            /* Light Theme */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --accent: #ca8a04;
+            --accent-glow: rgba(202, 138, 4, 0.08);
+            --accent-gradient: linear-gradient(135deg, #eab308 0%, #854d0e 100%);
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --success: #059669;
+            --success-glow: rgba(5, 150, 105, 0.08);
+            --warning: #d97706;
+            --danger: #dc2626;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        [data-theme="beige"] {
+            /* Biscuit Theme */
+            --bg-primary: #f5eed8;
+            --bg-secondary: #eadebe;
+            --bg-tertiary: #dfcfab;
+            --text-primary: #2d1a08;
+            --text-secondary: #5c3a1a;
+            --text-muted: #7d5c3f;
+            --accent: #b57a15;
+            --accent-glow: rgba(181, 122, 21, 0.12);
+            --accent-gradient: linear-gradient(135deg, #b57a15 0%, #78350f 100%);
+            --border-color: #dfcfab;
+            --border-hover: #cfbe99;
+            --success: #065f46;
+            --success-glow: rgba(6, 95, 70, 0.08);
+            --warning: #92400e;
+            --danger: #991b1b;
+            --shadow-sm: 0 2px 8px rgba(45, 26, 8, 0.05);
+            --shadow-md: 0 8px 24px rgba(45, 26, 8, 0.08);
+            --shadow-lg: 0 16px 48px rgba(45, 26, 8, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header.nav-header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-selector {
+            display: flex;
+            background-color: var(--bg-tertiary);
+            padding: 0.25rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .theme-opt {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .theme-opt.active {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dev-toggle-btn {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dev-toggle-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .app-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Login Modal Screen */
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            padding: 2rem 0;
+        }
+
+        .login-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .login-card h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card p {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+        }
+
+        .persona-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .persona-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            text-align: left;
+            transition: var(--transition);
+        }
+
+        .persona-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md), 0 0 15px var(--accent-glow);
+        }
+
+        .persona-name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .persona-detail {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .persona-badge {
+            background-color: var(--bg-tertiary);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+        }
+
+        /* User Header Details */
+        .user-panel {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #ffffff;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* Split Sandbox Layout (Responsive Grid) */
+        .sandbox-split {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            transition: var(--transition);
+        }
+
+        .sandbox-split.dev-active {
+            grid-template-columns: 1.2fr 0.8fr;
+        }
+
+        @media (max-width: 1024px) {
+            .sandbox-split.dev-active {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards & Form Styling */
+        .app-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        /* Dynamic Table Rows in Form */
+        .lines-container {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            background-color: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .line-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr 1fr 1fr auto;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .line-row {
+                grid-template-columns: 1fr;
+                border-bottom: 1px dashed var(--border-color);
+                padding-bottom: 0.5rem;
+            }
+        }
+
+        .btn-add-line {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 700;
+            align-self: flex-start;
+            transition: var(--transition);
+        }
+
+        .btn-add-line:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-delete-line {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.25rem;
+        }
+
+        .btn-submit {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md), 0 0 15px var(--accent-glow);
+        }
+
+        /* Developer Panel (OData Simulator - Collapsible) */
+        .dev-panel {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            display: none;
+        }
+
+        .dev-panel.active {
+            display: block;
+        }
+
+        .payload-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .payload-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background-color: #040810;
+        }
+
+        .payload-hdr {
+            background-color: #0b101c;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .payload-body {
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            color: #cbd5e1;
+            max-height: 250px;
+        }
+
+        /* Tables & Reports Display */
+        .table-responsive {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-tertiary);
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        tbody tr {
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-khi { background-color: rgba(202, 138, 4, 0.15); color: #eab308; border: 1px solid rgba(202, 138, 4, 0.3); }
+        .badge-jhang { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-fsd { background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-order { background-color: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+        .badge-invoice { background-color: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
+        .badge-success { background-color: var(--success-glow); color: var(--success); }
+
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            background-color: var(--bg-tertiary);
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            background-color: var(--bg-secondary);
+        }
+
+        /* MODAL OVERLAY */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(4, 8, 16, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--bg-primary);
+        }
+
+        /* ERP Document styles */
+        .erp-doc {
+            background-color: #ffffff;
+            color: #1e293b;
+            padding: 2.5rem;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            font-size: 0.9rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .erp-hdr {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #ca8a04;
+            padding-bottom: 1rem;
+        }
+
+        .erp-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            text-transform: uppercase;
+        }
+
+        .erp-meta {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .erp-addresses {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .erp-addr-block h4 {
+            font-weight: 700;
+            color: #0f172a;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .erp-addr-block p {
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+
+        .erp-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .erp-table th, .erp-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            font-size: 0.85rem;
+        }
+
+        .erp-table th {
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .erp-summary {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .erp-summary-box {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .erp-summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .erp-summary-row.total {
+            border-top: 2px solid #ca8a04;
+            padding-top: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .erp-comments-edit {
+            margin-top: 1rem;
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 1rem;
+        }
+
+        .erp-comments-edit label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .erp-comments-edit textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            color: #1e293b;
+        }
+
+        /* Print styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .modal-overlay.active, .modal-overlay.active .modal-card, .modal-overlay.active .erp-doc, .modal-overlay.active .erp-doc * {
+                visibility: visible;
+            }
+            .modal-overlay.active {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: none;
+                backdrop-filter: none;
+            }
+            .modal-card {
+                border: none;
+                box-shadow: none;
+                max-height: none;
+                overflow: visible;
+            }
+            .modal-header, .modal-footer, .erp-comments-edit {
+                display: none !important;
+            }
+            .erp-doc {
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV HEADER -->
+    <header class="nav-header">
+        <div class="header-logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3l8 4.5v9l-8 4.5l-8 -4.5v-9z" />
+                <path d="M12 12l8 -4.5" />
+                <path d="M12 12v9" />
+                <path d="M12 12l-8 -4.5" />
+            </svg>
+            <span>Rafhan Maize SAP S/4HANA Middleware Sandbox</span>
+        </div>
+        <div class="header-actions">
+            <div class="theme-selector">
+                <button class="theme-opt active" onclick="setTheme('dark')">Dark</button>
+                <button class="theme-opt" onclick="setTheme('light')">Light</button>
+                <button class="theme-opt" onclick="setTheme('beige')">Beige</button>
+            </div>
+            <button class="dev-toggle-btn" id="devModeBtn" onclick="toggleDevMode()">Developer Console</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+
+        <!-- STEP 1: ROLE PERSONA LOGIN SCREEN -->
+        <section class="login-screen" id="login-section">
+            <div class="login-card">
+                <h2>SAP S/4HANA Role Login</h2>
+                <p>Select a persona below to simulate their specific business workflow and OData authorizations:</p>
+                
+                <div class="persona-list">
+                    <button class="persona-btn" onclick="login('khi_sales')">
+                        <div>
+                            <div class="persona-name">Karachi Office (Sales Coordinator)</div>
+                            <div class="persona-detail">Post Refined Starch B2B Orders (VBAK/VBAP)</div>
+                        </div>
+                        <span class="persona-badge">Sales Role</span>
+                    </button>
+                    
+                    <button class="persona-btn" onclick="login('jhang_proc')">
+                        <div>
+                            <div class="persona-name">Jhang Plant (Procurement Officer)</div>
+                            <div class="persona-detail">Post Supplier Invoices for Grain (RBKP/RSEG)</div>
+                        </div>
+                        <span class="persona-badge">Procurement</span>
+                    </button>
+                    
+                    <button class="persona-btn" onclick="login('fsd_audit')">
+                        <div>
+                            <div class="persona-name">Faisalabad HQ (Finance Auditor)</div>
+                            <div class="persona-detail">Cross-Plant Audit Log & Admin Operations</div>
+                        </div>
+                        <span class="persona-badge">Admin & Audit</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- WORKSPACE (VISIBLE AFTER LOGIN) -->
+        <section id="workspace-section" style="display: none; flex-direction: column; gap: 2rem;">
+            
+            <!-- User Status Panel -->
+            <div class="user-panel">
+                <div class="user-profile">
+                    <div class="avatar-circle" id="user-avatar">RM</div>
+                    <div>
+                        <h4 style="margin-bottom: 0.15rem;" id="user-display-name">User Display Name</h4>
+                        <p style="margin-bottom: 0; font-size: 0.85rem;" id="user-branch-role">Faisalabad HQ | Auditor</p>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Workspace Columns (Left: Form, Right: Dev Panel) -->
+            <div class="sandbox-split" id="workspace-grid">
+                
+                <!-- Left Column: Form Card -->
+                <div class="app-card" id="form-card">
+                    <!-- Dynamic form loaded via JS -->
+                </div>
+
+                <!-- Right Column: Dev Console (Simulator) -->
+                <div class="dev-panel" id="dev-console-panel">
+                    <div class="app-card" style="height: 100%; padding: 0; gap: 0;">
+                        <div class="card-title" style="padding: 1.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0;">
+                            🛠️ OData Middleware Simulator
+                        </div>
+                        <div class="payload-list">
+                            <div class="payload-card">
+                                <div class="payload-hdr">Raw Frontend JSON payload</div>
+                                <div class="payload-body" id="raw-json-box">Submit transaction data to simulate...</div>
+                            </div>
+                            <div class="payload-card">
+                                <div class="payload-hdr">S/4HANA OData Gateway payload (VBAK/VBAP)</div>
+                                <div class="payload-body" id="sap-json-box">Waiting for middleware processing...</div>
+                            </div>
+                            <div class="payload-card">
+                                <div class="payload-hdr">SAP NetWeaver HTTP Response</div>
+                                <div class="payload-body" id="response-json-box">Waiting for Gateway post commit...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports and Database View (Shared) -->
+            <div class="app-card">
+                <div class="card-title">
+                    📋 SAP HANA Local Database Staging View (Simulated)
+                </div>
+                
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <button class="filter-btn active" id="f-all" onclick="filterReport('all')">All Plants</button>
+                        <button class="filter-btn" id="f-kar" onclick="filterReport('Karachi')">Karachi Sales</button>
+                        <button class="filter-btn" id="f-jha" onclick="filterReport('Jhang')">Jhang Plant</button>
+                    </div>
+                    <div class="report-actions">
+                        <button class="action-btn" onclick="exportHtmlReport()">
+                            📄 Export HTML Summary
+                        </button>
+                        <button class="action-btn" style="background-color: var(--accent); color: white;" onclick="window.print()">
+                            🖨️ Export PDF / Print Reports
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Reports Table -->
+                <div class="table-responsive">
+                    <table id="db-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction UUID</th>
+                                <th>Doc Date</th>
+                                <th>Doc Entry No.</th>
+                                <th>Plant/Office</th>
+                                <th>Doc Class</th>
+                                <th>Partner Name (ID)</th>
+                                <th>Net Value</th>
+                                <th>Logged By</th>
+                                <th>Commit Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="db-table-body">
+                            <!-- JS injected rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- DOCUMENT VIEWER MODAL -->
+    <div class="modal-overlay" id="doc-modal" onclick="closeModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modal-doc-title">SAP Document Viewer</h3>
+                <button class="modal-close-btn" onclick="toggleModal(false)">×</button>
+            </div>
+            <div class="modal-body" id="modal-doc-body">
+                <!-- ERP document will be dynamically injected here -->
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" style="background-color: var(--danger); color: white; border: none;" id="btn-modal-delete">🗑️ Delete Transaction</button>
+                <div>
+                    <button class="action-btn" onclick="toggleModal(false)">Close</button>
+                    <button class="action-btn" style="background-color: var(--success); color: white; border: none;" id="btn-modal-save">💾 Save Changes</button>
+                    <button class="action-btn" style="background-color: var(--accent); color: white; border: none;" onclick="printModalDoc()">🖨️ Print / Save PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Seed database
+        const seedTransactions = [
+            {
+                transId: "5ea1d0b2-78d1-419b-ac74-ff108b2cf120",
+                timestamp: "2026-07-18 10:14:02",
+                docNum: 80001,
+                branch: "Karachi",
+                docType: "Sales Order",
+                bpCode: "K20015",
+                bpName: "Nishat Mills Ltd",
+                numAtCard: "PO-NISHAT-2026",
+                docDate: "2026-07-18",
+                docDueDate: "2026-07-25",
+                currency: "PKR",
+                paymentMethod: "Letter of Credit",
+                salesPerson: "Khurram Shahzad",
+                comments: "Urgent shipment of Tex-O-Film textile sizing starch for Faisalabad weaving units.",
+                items: [
+                    { itemCode: "ST-TEXOFILM", description: "Tex-O-Film Textile Starch (MT)", qty: 25, price: 95000.00, whs: "WH-KHI", vatGroup: "VAT18" }
+                ],
+                netTotal: 2375000.00,
+                taxTotal: 427500.00,
+                grandTotal: 2802500.00,
+                createdBy: "Farhan Qureshi",
+                status: "Committed to S/4HANA DB"
+            },
+            {
+                transId: "9cb81254-20a2-47ef-bc91-23d5d781bcf2",
+                timestamp: "2026-07-19 14:20:10",
+                docNum: 90002,
+                branch: "Jhang",
+                docType: "AP Invoice",
+                bpCode: "S1024",
+                bpName: "Faisalabad Grain Syndicate",
+                numAtCard: "INV-CORN-9812",
+                docDate: "2026-07-19",
+                docDueDate: "2026-08-19",
+                currency: "PKR",
+                paymentMethod: "Bank Wire Transfer",
+                comments: "Procured yellow maize grains from local farm cluster.",
+                items: [
+                    { itemCode: "RM-CORNGRAIN", description: "Raw Yellow Maize Grains (MT)", qty: 150, price: 42000.00, whs: "WH-JHANG", vatGroup: "EXEMPT" }
+                ],
+                netTotal: 6300000.00,
+                taxTotal: 0.00,
+                grandTotal: 6300000.00,
+                createdBy: "Kamran Ahmed",
+                status: "Committed to S/4HANA DB"
+            }
+        ];
+
+        let transactions = JSON.parse(localStorage.getItem("rafhan_sap_db_standard_v1"));
+        if (!transactions) {
+            transactions = seedTransactions;
+            localStorage.setItem("rafhan_sap_db_standard_v1", JSON.stringify(transactions));
+        }
+
+        let currentUser = null;
+        let activeFilter = 'all';
+        let isDevMode = false;
+
+        // Theme Setter
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.querySelectorAll('.theme-opt').forEach(btn => {
+                if (btn.innerText.toLowerCase() === theme) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // Toggle Dev Mode (OData Console)
+        function toggleDevMode() {
+            isDevMode = !isDevMode;
+            const devBtn = document.getElementById("devModeBtn");
+            const grid = document.getElementById("workspace-grid");
+            const devPanel = document.getElementById("dev-console-panel");
+
+            if (isDevMode) {
+                devBtn.classList.add("active");
+                grid.classList.add("dev-active");
+                devPanel.classList.add("active");
+            } else {
+                devBtn.classList.remove("active");
+                grid.classList.remove("dev-active");
+                devPanel.classList.remove("active");
+            }
+        }
+
+        // Persona login
+        function login(personaKey) {
+            if (personaKey === 'khi_sales') {
+                currentUser = { name: "Farhan Qureshi", branch: "Karachi", role: "Sales Coordinator (Export/B2B)", key: "khi_sales" };
+            } else if (personaKey === 'jhang_proc') {
+                currentUser = { name: "Kamran Ahmed", branch: "Jhang", role: "Procurement Officer (Grain Intake)", key: "jhang_proc" };
+            } else if (personaKey === 'fsd_audit') {
+                currentUser = { name: "Imran Raza", branch: "Faisalabad", role: "Finance Auditor (HQ Operations)", key: "fsd_audit" };
+            }
+            
+            document.getElementById("login-section").style.display = "none";
+            document.getElementById("workspace-section").style.display = "flex";
+            
+            document.getElementById("user-avatar").innerText = currentUser.name.split(" ").map(n => n[0]).join("");
+            document.getElementById("user-display-name").innerText = currentUser.name;
+            document.getElementById("user-branch-role").innerText = `${currentUser.branch} Plant/Office | ${currentUser.role}`;
+            
+            loadForm(currentUser.key);
+            renderTable();
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById("login-section").style.display = "flex";
+            document.getElementById("workspace-section").style.display = "none";
+            resetLogDisplays();
+        }
+
+        function resetLogDisplays() {
+            document.getElementById("raw-json-box").innerText = "Submit transaction data to simulate...";
+            document.getElementById("sap-json-box").innerText = "Waiting for middleware processing...";
+            document.getElementById("response-json-box").innerText = "Waiting for Gateway post commit...";
+        }
+
+        // Load correct form based on user role
+        function loadForm(personaKey) {
+            const formCard = document.getElementById("form-card");
+            if (personaKey === 'khi_sales') {
+                formCard.innerHTML = `
+                    <div class="card-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        VBAK/VBAP - Sales Order Entry (Karachi Sales Office)
+                    </div>
+                    <form id="sales-order-form" onsubmit="handleSalesSubmit(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Sold-To Customer (SoldToParty)</label>
+                                <select id="so-cardcode" class="form-control" onchange="updateBPName()" required>
+                                    <option value="">-- Select Customer --</option>
+                                    <option value="K20015">Nishat Mills Ltd (K20015)</option>
+                                    <option value="K20110">National Foods Ltd (K20110)</option>
+                                    <option value="K20042">Kohinoor Textile Mills (K20042)</option>
+                                    <option value="K20088">Mitchells Fruit Farms (K20088)</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="so-cardname" value="">
+                            <div class="form-group">
+                                <label>Sales Document Type (SalesOrderType)</label>
+                                <input type="text" id="so-ordertype" class="form-control" value="TA" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Document Posting Date (SalesOrderDate)</label>
+                                <input type="date" id="so-docdate" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Requested Delivery Date</label>
+                                <input type="date" id="so-duedate" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Customer PO Reference (PurchaseOrderByCustomer)</label>
+                                <input type="text" id="so-refnum" class="form-control" placeholder="e.g. PO-789-2026" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Sales Representative</label>
+                                <select id="so-salesperson" class="form-control">
+                                    <option value="Khurram Shahzad">Khurram Shahzad (B2B Lead)</option>
+                                    <option value="Zahid Malik">Zahid Malik (Industrial Accounts)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Document Currency (TransactionCurrency)</label>
+                                <select id="so-currency" class="form-control">
+                                    <option value="PKR">PKR - Pakistani Rupee</option>
+                                    <option value="USD">USD - United States Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Method (Terms)</label>
+                                <select id="so-paymethod" class="form-control">
+                                    <option value="Letter of Credit">Letter of Credit (L/C)</option>
+                                    <option value="Bank Transfer">Bank Wire Transfer</option>
+                                    <option value="Net 30 Days">Net 30 Days Credit</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Order Items (VBAP Document lines)</label>
+                            <div class="lines-container" id="so-lines-container">
+                                <div class="line-row" id="row-0">
+                                    <select class="form-control line-itemcode" onchange="updateItemDesc('row-0')" required>
+                                        <option value="">-- Product Code --</option>
+                                        <option value="ST-TEXOFILM">ST-TEXOFILM (Tex-O-Film Sizing Starch)</option>
+                                        <option value="ST-AMIOCA">ST-AMIOCA (Amioca Specialty Starch)</option>
+                                        <option value="ST-STANDARD">ST-STANDARD (Industrial Maize Starch)</option>
+                                        <option value="SW-GLUCOSE">SW-GLUCOSE (Liquid Glucose Syrup)</option>
+                                        <option value="SW-DEXTROSE">SW-DEXTROSE (Dextrose Monohydrate)</option>
+                                    </select>
+                                    <input type="text" placeholder="Description" class="form-control line-desc" readonly required>
+                                    <input type="number" placeholder="Qty (MT)" class="form-control line-qty" required min="1">
+                                    <input type="number" step="0.01" placeholder="Price / MT" class="form-control line-price" required>
+                                    <select class="form-control line-vat">
+                                        <option value="VAT18">VAT18 (18% Sales Tax)</option>
+                                        <option value="EXEMPT">Exempt (0% Tax)</option>
+                                    </select>
+                                    <button type="button" class="btn-delete-line" onclick="deleteLine('row-0')">×</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-add-line" onclick="addSalesLineRow()">+ Add Product Row</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Remarks / Export Comments</label>
+                            <input type="text" id="so-comments" class="form-control" placeholder="Add order remarks...">
+                        </div>
+                        <button type="submit" class="btn-submit">Post Sales Order to S/4HANA Gateway</button>
+                    </form>
+                `;
+                document.getElementById("so-docdate").value = new Date().toISOString().split("T")[0];
+                let due = new Date();
+                due.setDate(due.getDate() + 7);
+                document.getElementById("so-duedate").value = due.toISOString().split("T")[0];
+            } else if (personaKey === 'jhang_proc') {
+                formCard.innerHTML = `
+                    <div class="card-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        RBKP/RSEG - Supplier Invoice Entry (Jhang Refining Plant)
+                    </div>
+                    <form id="purchase-invoice-form" onsubmit="handlePurchaseSubmit(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Invoicing Supplier (InvoicingParty)</label>
+                                <select id="pi-cardcode" class="form-control" onchange="updatePIBPName()" required>
+                                    <option value="">-- Select Supplier --</option>
+                                    <option value="S1024">Faisalabad Grain Syndicate (S1024)</option>
+                                    <option value="S1055">Punjab Agri Seed Suppliers (S1055)</option>
+                                    <option value="S1090">Indus Chemical Supplies (S1090)</option>
+                                </select>
+                            </div>
+                            <input type="hidden" id="pi-cardname" value="">
+                            <div class="form-group">
+                                <label>Fiscal Year</label>
+                                <input type="text" id="pi-year" class="form-control" value="2026" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Posting Date (DocDate)</label>
+                                <input type="date" id="pi-docdate" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Invoice Due Date</label>
+                                <input type="date" id="pi-duedate" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Supplier Ref Invoice No. (DocumentHeaderText)</label>
+                                <input type="text" id="pi-refnum" class="form-control" placeholder="e.g. INV-CORN-5012" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Currency</label>
+                                <select id="pi-currency" class="form-control">
+                                    <option value="PKR">PKR - Pak Rupee</option>
+                                    <option value="USD">USD - US Dollar</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Method</label>
+                                <select id="pi-paymethod" class="form-control">
+                                    <option value="Bank Wire Transfer">Bank Wire Transfer</option>
+                                    <option value="Net 30 Days">Net 30 Days Credit</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Purchase Line Items (RSEG layout)</label>
+                            <div class="lines-container" id="pi-lines-container">
+                                <div class="line-row" id="pi-row-0">
+                                    <select class="form-control line-itemcode" onchange="updatePIItemDesc('pi-row-0')" required>
+                                        <option value="">-- Material SKU --</option>
+                                        <option value="RM-CORNGRAIN">RM-CORNGRAIN (Raw Yellow Corn Grains)</option>
+                                        <option value="RM-ACIDCHM">RM-ACIDCHM (Milling Hydrochloric Acid)</option>
+                                        <option value="RM-COALENERGY">RM-COALENERGY (Steam Coal Fuel)</option>
+                                    </select>
+                                    <input type="text" placeholder="Description" class="form-control line-desc" readonly required>
+                                    <input type="number" placeholder="Qty (MT)" class="form-control line-qty" required min="1">
+                                    <input type="number" step="0.01" placeholder="Price / MT" class="form-control line-price" required>
+                                    <select class="form-control line-vat">
+                                        <option value="EXEMPT">Exempt (0% Tax)</option>
+                                        <option value="VAT18">VAT18 (18%)</option>
+                                    </select>
+                                    <button type="button" class="btn-delete-line" onclick="deleteLine('pi-row-0')">×</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-add-line" onclick="addPurchaseLineRow()">+ Add Material Row</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Remarks / Weighbridge Comments</label>
+                            <input type="text" id="pi-comments" class="form-control" placeholder="Comments...">
+                        </div>
+                        <button type="submit" class="btn-submit">Post AP Invoice to S/4HANA Gateway</button>
+                    </form>
+                `;
+                document.getElementById("pi-docdate").value = new Date().toISOString().split("T")[0];
+                let due = new Date();
+                due.setDate(due.getDate() + 30);
+                document.getElementById("pi-duedate").value = due.toISOString().split("T")[0];
+            } else if (personaKey === 'fsd_audit') {
+                formCard.innerHTML = `
+                    <div class="card-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="16" x2="12" y2="12"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                        Faisalabad HQ Admin Console & Analytics
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <p style="font-size: 0.95rem; color: var(--text-secondary);">
+                            As an administrator from Faisalabad headquarters, you have complete cross-branch auditing capabilities over Karachi (Sales Orders) and Jhang (AP Invoices).
+                        </p>
+                        <div class="lines-container" style="background-color: var(--bg-tertiary);">
+                            <h4 style="font-size: 0.9rem; margin-bottom:0.25rem; color: var(--accent);">S/4HANA Database Status Summary</h4>
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; padding: 0.25rem 0;">
+                                <span>Karachi Sales Orders Count:</span>
+                                <strong id="khi-cnt">0</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; padding: 0.25rem 0;">
+                                <span>Jhang Plant AP Invoices Count:</span>
+                                <strong id="jhang-cnt">0</strong>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; border-top:1px solid var(--border-color); padding-top:0.5rem; margin-top:0.25rem;">
+                                <span>Total Committed Database Records:</span>
+                                <strong id="ttl-cnt">0</strong>
+                            </div>
+                        </div>
+                        <button class="btn-submit" onclick="clearSimulatedDb()" style="background: var(--danger);">Reset Local Storage Database</button>
+                    </div>
+                `;
+                updateAdminMetrics();
+            }
+        }
+
+        // B2B BP & Item Detail Lookup Tables
+        const customerLookup = {
+            "K20015": "Nishat Mills Ltd",
+            "K20110": "National Foods Ltd",
+            "K20042": "Kohinoor Textile Mills",
+            "K20088": "Mitchells Fruit Farms"
+        };
+
+        const supplierLookup = {
+            "S1024": "Faisalabad Grain Syndicate",
+            "S1055": "Punjab Agri Seed Suppliers",
+            "S1090": "Indus Chemical Supplies"
+        };
+
+        const itemDetails = {
+            "ST-TEXOFILM": { desc: "Tex-O-Film Textile Starch (MT)", price: 95000.00 },
+            "ST-AMIOCA": { desc: "Amioca Specialty Starch (MT)", price: 120000.00 },
+            "ST-STANDARD": { desc: "Industrial Maize Starch (MT)", price: 82000.00 },
+            "SW-GLUCOSE": { desc: "Liquid Glucose Syrup (MT)", price: 78000.00 },
+            "SW-DEXTROSE": { desc: "Dextrose Monohydrate (MT)", price: 145000.00 },
+            "RM-CORNGRAIN": { desc: "Raw Yellow Corn Grains (MT)", price: 42000.00 },
+            "RM-ACIDCHM": { desc: "Milling Hydrochloric Acid (MT)", price: 68000.00 },
+            "RM-COALENERGY": { desc: "Steam Coal Fuel (MT)", price: 32000.00 }
+        };
+
+        function updateBPName() {
+            const select = document.getElementById("so-cardcode");
+            document.getElementById("so-cardname").value = customerLookup[select.value] || "";
+        }
+
+        function updatePIBPName() {
+            const select = document.getElementById("pi-cardcode");
+            document.getElementById("pi-cardname").value = supplierLookup[select.value] || "";
+        }
+
+        function updateItemDesc(rowId) {
+            const row = document.getElementById(rowId);
+            const select = row.querySelector(".line-itemcode");
+            const detail = itemDetails[select.value];
+            if (detail) {
+                row.querySelector(".line-desc").value = detail.desc;
+                row.querySelector(".line-price").value = detail.price;
+            } else {
+                row.querySelector(".line-desc").value = "";
+                row.querySelector(".line-price").value = "";
+            }
+        }
+
+        function updatePIItemDesc(rowId) {
+            const row = document.getElementById(rowId);
+            const select = row.querySelector(".line-itemcode");
+            const detail = itemDetails[select.value];
+            if (detail) {
+                row.querySelector(".line-desc").value = detail.desc;
+                row.querySelector(".line-price").value = detail.price;
+            } else {
+                row.querySelector(".line-desc").value = "";
+                row.querySelector(".line-price").value = "";
+            }
+        }
+
+        // Add row functions
+        let salesRowCount = 1;
+        function addSalesLineRow() {
+            const container = document.getElementById("so-lines-container");
+            const newRowId = `row-${salesRowCount}`;
+            const div = document.createElement("div");
+            div.className = "line-row";
+            div.id = newRowId;
+            div.innerHTML = `
+                <select class="form-control line-itemcode" onchange="updateItemDesc('${newRowId}')" required>
+                    <option value="">-- Product Code --</option>
+                    <option value="ST-TEXOFILM">ST-TEXOFILM (Tex-O-Film)</option>
+                    <option value="ST-AMIOCA">ST-AMIOCA (Amioca)</option>
+                    <option value="ST-STANDARD">ST-STANDARD (Maize Starch)</option>
+                    <option value="SW-GLUCOSE">SW-GLUCOSE (Liquid Glucose)</option>
+                    <option value="SW-DEXTROSE">SW-DEXTROSE (Dextrose)</option>
+                </select>
+                <input type="text" placeholder="Description" class="form-control line-desc" readonly required>
+                <input type="number" placeholder="Qty" class="form-control line-qty" required min="1">
+                <input type="number" step="0.01" placeholder="Price" class="form-control line-price" required>
+                <select class="form-control line-vat">
+                    <option value="VAT18">VAT18 (18%)</option>
+                    <option value="EXEMPT">Exempt (0%)</option>
+                </select>
+                <button type="button" class="btn-delete-line" onclick="deleteLine('${newRowId}')">×</button>
+            `;
+            container.appendChild(div);
+            salesRowCount++;
+        }
+
+        let purchaseRowCount = 1;
+        function addPurchaseLineRow() {
+            const container = document.getElementById("pi-lines-container");
+            const newRowId = `pi-row-${purchaseRowCount}`;
+            const div = document.createElement("div");
+            div.className = "line-row";
+            div.id = newRowId;
+            div.innerHTML = `
+                <select class="form-control line-itemcode" onchange="updatePIItemDesc('${newRowId}')" required>
+                    <option value="">-- Material SKU --</option>
+                    <option value="RM-CORNGRAIN">RM-CORNGRAIN (Corn Grains)</option>
+                    <option value="RM-ACIDCHM">RM-ACIDCHM (Milling Acid)</option>
+                    <option value="RM-COALENERGY">RM-COALENERGY (Steam Coal)</option>
+                </select>
+                <input type="text" placeholder="Description" class="form-control line-desc" readonly required>
+                <input type="number" placeholder="Qty" class="form-control line-qty" required min="1">
+                <input type="number" step="0.01" placeholder="Price" class="form-control line-price" required>
+                <select class="form-control line-vat">
+                    <option value="EXEMPT">Exempt (0%)</option>
+                    <option value="VAT18">VAT18 (18%)</option>
+                </select>
+                <button type="button" class="btn-delete-line" onclick="deleteLine('${newRowId}')">×</button>
+            `;
+            container.appendChild(div);
+            purchaseRowCount++;
+        }
+
+        function deleteLine(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) row.remove();
+        }
+
+        // Post Sales Order
+        function handleSalesSubmit(e) {
+            e.preventDefault();
+            const cardCode = document.getElementById("so-cardcode").value;
+            const cardName = document.getElementById("so-cardname").value;
+            const docDate = document.getElementById("so-docdate").value;
+            const dueDate = document.getElementById("so-duedate").value;
+            const refNum = document.getElementById("so-refnum").value;
+            const salesPerson = document.getElementById("so-salesperson").value;
+            const currency = document.getElementById("so-currency").value;
+            const payMethod = document.getElementById("so-paymethod").value;
+            const comments = document.getElementById("so-comments").value;
+            
+            const lines = [];
+            const rows = document.querySelectorAll("#so-lines-container .line-row");
+            let netTotal = 0;
+            let taxTotal = 0;
+            
+            rows.forEach((row, index) => {
+                const itemCode = row.querySelector(".line-itemcode").value;
+                const desc = row.querySelector(".line-desc").value;
+                const qty = parseInt(row.querySelector(".line-qty").value);
+                const price = parseFloat(row.querySelector(".line-price").value);
+                const vat = row.querySelector(".line-vat").value;
+                
+                const lineTotal = qty * price;
+                const lineTax = vat === 'VAT18' ? lineTotal * 0.18 : 0.0;
+                netTotal += lineTotal;
+                taxTotal += lineTax;
+
+                lines.push({
+                    SalesOrder: "8000" + (transactions.length + 1),
+                    SalesOrderItem: String((index + 1) * 10).padStart(6, '0'),
+                    Material: itemCode,
+                    MaterialName: desc,
+                    RequestedQuantity: qty,
+                    NetPriceAmount: price,
+                    ProductionPlant: "0102", // Karachi exports usually routed from Jhang Plant
+                    VatGroup: vat
+                });
+            });
+
+            const grandTotal = netTotal + taxTotal;
+            const transId = uuidv4();
+            const timestamp = getTimestamp();
+            const docNum = 80000 + transactions.length;
+
+            const rawInput = {
+                customer_id: cardCode,
+                purchase_ref: refNum,
+                posting_date: docDate,
+                delivery_date: dueDate,
+                currency_code: currency,
+                items: lines.map(l => ({ product: l.Material, quantity: l.RequestedQuantity, price: l.NetPriceAmount }))
+            };
+
+            const sapPayload = {
+                "__metadata": {
+                    "uri": `https://sap-gateway.rafhanmaize.com/sap/opu/odata/sap/API_SALES_ORDER_SRV/A_SalesOrder('${docNum}')`,
+                    "type": "API_SALES_ORDER_SRV.A_SalesOrderType"
+                },
+                SalesOrder: String(docNum),
+                SalesOrderType: "TA",
+                SoldToParty: cardCode,
+                SalesOrderDate: docDate + "T00:00:00",
+                TransactionCurrency: currency,
+                PurchaseOrderByCustomer: refNum,
+                HeaderRemarks: comments,
+                U_MW_CreatedBy: currentUser.name,
+                U_MW_TransID: transId,
+                to_Item: lines.map(l => ({
+                    SalesOrder: String(docNum),
+                    SalesOrderItem: l.SalesOrderItem,
+                    Material: l.Material.toUpperCase(),
+                    RequestedQuantity: String(l.RequestedQuantity),
+                    NetPriceAmount: String(l.NetPriceAmount),
+                    ProductionPlant: l.ProductionPlant,
+                    TaxCode: l.VatGroup === 'VAT18' ? 'S1' : 'E0'
+                }))
+            };
+
+            const responsePayload = {
+                "d": {
+                    "__metadata": {
+                        "uri": `https://sap-gateway.rafhanmaize.com/sap/opu/odata/sap/API_SALES_ORDER_SRV/A_SalesOrder('${docNum}')`,
+                        "type": "API_SALES_ORDER_SRV.A_SalesOrderType"
+                    },
+                    SalesOrder: String(docNum),
+                    SoldToParty: cardCode,
+                    TransactionCurrency: currency,
+                    TotalNetAmount: String(netTotal),
+                    TaxAmount: String(taxTotal),
+                    TotalAmount: String(grandTotal),
+                    Status: "HTTP 201 Created - S/4HANA ACID Complete"
+                }
+            };
+
+            // Save to DB
+            const newTrans = {
+                transId: transId,
+                timestamp: timestamp,
+                docNum: docNum,
+                branch: currentUser.branch,
+                docType: "Sales Order",
+                bpCode: cardCode,
+                bpName: cardName,
+                numAtCard: refNum,
+                docDate: docDate,
+                docDueDate: dueDate,
+                currency: currency,
+                paymentMethod: payMethod,
+                salesPerson: salesPerson,
+                comments: comments,
+                items: lines,
+                netTotal: netTotal,
+                taxTotal: taxTotal,
+                grandTotal: grandTotal,
+                createdBy: currentUser.name,
+                status: "Committed to S/4HANA DB"
+            };
+
+            transactions.unshift(newTrans);
+            localStorage.setItem("rafhan_sap_db_standard_v1", JSON.stringify(transactions));
+
+            // Dev console displays
+            document.getElementById("raw-json-box").innerText = JSON.stringify(rawInput, null, 4);
+            document.getElementById("sap-json-box").innerText = JSON.stringify(sapPayload, null, 4);
+            document.getElementById("response-json-box").innerText = "HTTP/1.1 201 Created\nContent-Type: application/json\n\n" + JSON.stringify(responsePayload, null, 4);
+
+            renderTable();
+            
+            // Clear inputs
+            document.getElementById("so-cardcode").value = "";
+            document.getElementById("so-refnum").value = "";
+            document.getElementById("so-comments").value = "";
+            document.getElementById("so-lines-container").innerHTML = `
+                <div class="line-row" id="row-0">
+                    <select class="form-control line-itemcode" onchange="updateItemDesc('row-0')" required>
+                        <option value="">-- Product Code --</option>
+                        <option value="ST-TEXOFILM">ST-TEXOFILM</option>
+                        <option value="ST-AMIOCA">ST-AMIOCA</option>
+                        <option value="ST-STANDARD">ST-STANDARD</option>
+                        <option value="SW-GLUCOSE">SW-GLUCOSE</option>
+                        <option value="SW-DEXTROSE">SW-DEXTROSE</option>
+                    </select>
+                    <input type="text" placeholder="Description" class="form-control line-desc" readonly required>
+                    <input type="number" placeholder="Qty" class="form-control line-qty" required min="1">
+                    <input type="number" step="0.01" placeholder="Price" class="form-control line-price" required>
+                    <select class="form-control line-vat">
+                        <option value="VAT18">VAT18 (18%)</option>
+                        <option value="EXEMPT">Exempt (0%)</option>
+                    </select>
+                    <button type="button" class="btn-delete-line" onclick="deleteLine('row-0')">×</button>
+                </div>
+            `;
+            alert("Sales Order successfully processed and committed to SAP S/4HANA!");
+        }
+
+        // Post Purchase Invoice
+        function handlePurchaseSubmit(e) {
+            e.preventDefault();
+            const cardCode = document.getElementById("pi-cardcode").value;
+            const cardName = document.getElementById("pi-cardname").value;
+            const docDate = document.getElementById("pi-docdate").value;
+            const dueDate = document.getElementById("pi-duedate").value;
+            const refNum = document.getElementById("pi-refnum").value;
+            const currency = document.getElementById("pi-currency").value;
+            const payMethod = document.getElementById("pi-paymethod").value;
+            const comments = document.getElementById("pi-comments").value;
+
+            const lines = [];
+            const rows = document.querySelectorAll("#pi-lines-container .line-row");
+            let netTotal = 0;
+            let taxTotal = 0;
+            
+            rows.forEach((row, index) => {
+                const itemCode = row.querySelector(".line-itemcode").value;
+                const desc = row.querySelector(".line-desc").value;
+                const qty = parseInt(row.querySelector(".line-qty").value);
+                const price = parseFloat(row.querySelector(".line-price").value);
+                const vat = row.querySelector(".line-vat").value;
+                
+                const lineTotal = qty * price;
+                const lineTax = vat === 'VAT18' ? lineTotal * 0.18 : 0.0;
+                netTotal += lineTotal;
+                taxTotal += lineTax;
+
+                lines.push({
+                    SupplierInvoice: "9000" + (transactions.length + 1),
+                    SupplierInvoiceItem: String(index + 1),
+                    Material: itemCode,
+                    MaterialName: desc,
+                    QuantityInPurchaseOrderUnit: qty,
+                    SupplierInvoiceItemAmount: price,
+                    ProductionPlant: "0102", // Jhang Plant
+                    VatGroup: vat
+                });
+            });
+
+            const grandTotal = netTotal + taxTotal;
+            const transId = uuidv4();
+            const timestamp = getTimestamp();
+            const docNum = 90000 + transactions.length;
+
+            const rawInput = {
+                vendor_id: cardCode,
+                ref_invoice: refNum,
+                posting_date: docDate,
+                due_date: dueDate,
+                currency: currency,
+                line_items: lines.map(l => ({ sku: l.Material, volume: l.QuantityInPurchaseOrderUnit, cost: l.SupplierInvoiceItemAmount }))
+            };
+
+            const sapPayload = {
+                "__metadata": {
+                    "uri": `https://sap-gateway.rafhanmaize.com/sap/opu/odata/sap/API_AP_INVOICE_SRV/A_SupplierInvoice('${docNum}')`,
+                    "type": "API_AP_INVOICE_SRV.A_SupplierInvoiceType"
+                },
+                SupplierInvoice: String(docNum),
+                FiscalYear: "2026",
+                InvoicingParty: cardCode,
+                DocumentDate: docDate + "T00:00:00",
+                DocumentHeaderText: refNum,
+                RemarksText: comments,
+                U_MW_CreatedBy: currentUser.name,
+                U_MW_TransID: transId,
+                to_InvoiceItem: lines.map(l => ({
+                    SupplierInvoice: String(docNum),
+                    SupplierInvoiceItem: l.SupplierInvoiceItem,
+                    Material: l.Material.toUpperCase(),
+                    QuantityInPurchaseOrderUnit: String(l.QuantityInPurchaseOrderUnit),
+                    SupplierInvoiceItemAmount: String(l.SupplierInvoiceItemAmount),
+                    TaxCode: l.VatGroup === 'VAT18' ? 'S1' : 'E0'
+                }))
+            };
+
+            const responsePayload = {
+                "d": {
+                    "__metadata": {
+                        "uri": `https://sap-gateway.rafhanmaize.com/sap/opu/odata/sap/API_AP_INVOICE_SRV/A_SupplierInvoice('${docNum}')`,
+                        "type": "API_AP_INVOICE_SRV.A_SupplierInvoiceType"
+                    },
+                    SupplierInvoice: String(docNum),
+                    InvoicingParty: cardCode,
+                    InvoiceTotalAmount: String(grandTotal),
+                    Status: "HTTP 201 Created - S/4HANA Ledger Commit OK"
+                }
+            };
+
+            // DB Commit
+            const newTrans = {
+                transId: transId,
+                timestamp: timestamp,
+                docNum: docNum,
+                branch: currentUser.branch,
+                docType: "AP Invoice",
+                bpCode: cardCode,
+                bpName: cardName,
+                numAtCard: refNum,
+                docDate: docDate,
+                docDueDate: dueDate,
+                currency: currency,
+                paymentMethod: payMethod,
+                comments: comments,
+                items: lines,
+                netTotal: netTotal,
+                taxTotal: taxTotal,
+                grandTotal: grandTotal,
+                createdBy: currentUser.name,
+                status: "Committed to S/4HANA DB"
+            };
+
+            transactions.unshift(newTrans);
+            localStorage.setItem("rafhan_sap_db_standard_v1", JSON.stringify(transactions));
+
+            // Dev console displays
+            document.getElementById("raw-json-box").innerText = JSON.stringify(rawInput, null, 4);
+            document.getElementById("sap-json-box").innerText = JSON.stringify(sapPayload, null, 4);
+            document.getElementById("response-json-box").innerText = "HTTP/1.1 201 Created\nContent-Type: application/json\n\n" + JSON.stringify(responsePayload, null, 4);
+
+            renderTable();
+
+            // Clear inputs
+            document.getElementById("pi-cardcode").value = "";
+            document.getElementById("pi-refnum").value = "";
+            document.getElementById("pi-comments").value = "";
+            document.getElementById("pi-lines-container").innerHTML = `
+                <div class="line-row" id="pi-row-0">
+                    <select class="form-control line-itemcode" onchange="updatePIItemDesc('pi-row-0')" required>
+                        <option value="">-- Material SKU --</option>
+                        <option value="RM-CORNGRAIN">RM-CORNGRAIN</option>
+                        <option value="RM-ACIDCHM">RM-ACIDCHM</option>
+                        <option value="RM-COALENERGY">RM-COALENERGY</option>
+                    </select>
+                    <input type="text" placeholder="Description" class="form-control line-desc" readonly required>
+                    <input type="number" placeholder="Qty" class="form-control line-qty" required min="1">
+                    <input type="number" step="0.01" placeholder="Price" class="form-control line-price" required>
+                    <select class="form-control line-vat">
+                        <option value="EXEMPT">Exempt (0%)</option>
+                        <option value="VAT18">VAT18 (18%)</option>
+                    </select>
+                    <button type="button" class="btn-delete-line" onclick="deleteLine('pi-row-0')">×</button>
+                </div>
+            `;
+            alert("AP Supplier Invoice successfully committed to SAP S/4HANA ledger!");
+        }
+
+        // Render DB Reports Table
+        function renderTable() {
+            const tbody = document.getElementById("db-table-body");
+            tbody.innerHTML = "";
+            
+            const filtered = transactions.filter(t => {
+                if (activeFilter === 'all') return true;
+                return t.branch === activeFilter;
+            });
+
+            filtered.forEach(t => {
+                const tr = document.createElement("tr");
+                tr.onclick = () => openDocViewer(t.transId);
+                const branchBadge = t.branch === 'Karachi' ? 'badge-khi' : t.branch === 'Jhang' ? 'badge-jhang' : 'badge-fsd';
+                const docBadge = t.docType === 'Sales Order' ? 'badge-order' : 'badge-invoice';
+                
+                tr.innerHTML = `
+                    <td style="font-family: monospace; font-size: 0.8rem; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.transId}</td>
+                    <td>${t.docDate}</td>
+                    <td><strong>${t.docNum}</strong></td>
+                    <td><span class="badge ${branchBadge}">${t.branch} Plant</span></td>
+                    <td><span class="badge ${docBadge}">${t.docType}</span></td>
+                    <td><strong>${t.bpName}</strong> <span style="font-size:0.75rem; color:var(--text-secondary);">(${t.bpCode})</span></td>
+                    <td><strong>${t.currency} ${t.grandTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td>
+                    <td>${t.createdBy}</td>
+                    <td><span class="badge badge-success">${t.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Filter Table Reports
+        function filterReport(branch) {
+            activeFilter = branch;
+            document.querySelectorAll(".filter-bar .filter-btn").forEach(btn => {
+                if (btn.id === `f-${branch.toLowerCase().substring(0, 3)}` || (branch === 'all' && btn.id === 'f-all')) {
+                    btn.classList.add("active");
+                } else {
+                    btn.classList.remove("active");
+                }
+            });
+            renderTable();
+        }
+
+        // Admin panel metrics
+        function updateAdminMetrics() {
+            const khiCount = transactions.filter(t => t.branch === 'Karachi').length;
+            const jhangCount = transactions.filter(t => t.branch === 'Jhang').length;
+            
+            const khiEl = document.getElementById("khi-cnt");
+            const jhangEl = document.getElementById("jhang-cnt");
+            const ttlEl = document.getElementById("ttl-cnt");
+            
+            if (khiEl) khiEl.innerText = khiCount;
+            if (jhangEl) jhangEl.innerText = jhangCount;
+            if (ttlEl) ttlEl.innerText = transactions.length;
+        }
+
+        function clearSimulatedDb() {
+            if (confirm("Are you sure you want to clear the simulated S/4HANA database? This will reset all records back to default seeds.")) {
+                transactions = seedTransactions;
+                localStorage.setItem("rafhan_sap_db_standard_v1", JSON.stringify(transactions));
+                updateAdminMetrics();
+                renderTable();
+                alert("Simulated Database Reset!");
+            }
+        }
+
+        // Modal Viewer
+        function openDocViewer(transId) {
+            const doc = transactions.find(t => t.transId === transId);
+            if (!doc) return;
+
+            const modalBody = document.getElementById("modal-doc-body");
+            document.getElementById("modal-doc-title").innerText = `SAP S/4HANA Document Details - DocNum ${doc.docNum}`;
+
+            let itemsRows = "";
+            doc.items.forEach((item, index) => {
+                const qty = item.RequestedQuantity || item.QuantityInPurchaseOrderUnit;
+                const price = item.NetPriceAmount || item.SupplierInvoiceItemAmount;
+                const total = qty * price;
+                itemsRows += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${item.Material}</strong></td>
+                        <td>${item.MaterialName}</td>
+                        <td>${qty} MT</td>
+                        <td>${doc.currency} ${price.toFixed(2)}</td>
+                        <td>${item.ProductionPlant || '0102'}</td>
+                        <td>${item.VatGroup === 'VAT18' ? 'VAT18 (18%)' : 'EXEMPT'}</td>
+                        <td><strong>${doc.currency} ${total.toFixed(2)}</strong></td>
+                    </tr>
+                `;
+            });
+
+            modalBody.innerHTML = `
+                <div class="erp-doc">
+                    <div class="erp-hdr">
+                        <div>
+                            <div class="erp-title">${doc.docType}</div>
+                            <p style="font-size:0.9rem; color:#64748b; margin-top:0.25rem;">Rafhan Maize Products Co. Ltd.</p>
+                        </div>
+                        <div class="erp-meta">
+                            <div>Document No: <strong>${doc.docNum}</strong></div>
+                            <div>Transaction UUID: <span style="font-family:monospace; font-size:0.8rem;">${doc.transId}</span></div>
+                            <div>Posting Date: <strong>${doc.docDate}</strong></div>
+                            <div>Due Date: <strong>${doc.docDueDate}</strong></div>
+                        </div>
+                    </div>
+                    
+                    <div class="erp-addresses">
+                        <div class="erp-addr-block">
+                            <h4>Business Partner Information</h4>
+                            <p><strong>BP Code:</strong> ${doc.bpCode}</p>
+                            <p><strong>BP Name:</strong> ${doc.bpName}</p>
+                            <p><strong>Location Plant:</strong> ${doc.branch} Plant</p>
+                        </div>
+                        <div class="erp-addr-block">
+                            <h4>Document Audit Metadata</h4>
+                            <p><strong>Reference / Invoice No:</strong> ${doc.numAtCard}</p>
+                            <p><strong>Payment Method:</strong> ${doc.paymentMethod}</p>
+                            <p><strong>Created By Persona:</strong> ${doc.createdBy} (Audit Logged)</p>
+                            <p><strong>Middleware Link:</strong> Active via OData V2 Service</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;">Document Lines (SAP VBAP / RSEG)</h4>
+                        <table class="erp-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Material SKU</th>
+                                    <th>Material Details</th>
+                                    <th>Volume (MT)</th>
+                                    <th>Price / Unit</th>
+                                    <th>Plant ID</th>
+                                    <th>Tax Class</th>
+                                    <th>Total Net Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${itemsRows}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="erp-summary">
+                        <div class="erp-summary-box">
+                            <div class="erp-summary-row">
+                                <span>Net Total:</span>
+                                <span>${doc.currency} ${doc.netTotal.toFixed(2)}</span>
+                            </div>
+                            <div class="erp-summary-row">
+                                <span>Sales Tax:</span>
+                                <span>${doc.currency} ${doc.taxTotal.toFixed(2)}</span>
+                            </div>
+                            <div class="erp-summary-row total">
+                                <span>Grand Total:</span>
+                                <span>${doc.currency} ${doc.grandTotal.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="erp-comments-edit">
+                        <label for="edit-remarks-box">Remarks / Comments (Editable)</label>
+                        <textarea id="edit-remarks-box" rows="2" placeholder="Modify comments here...">${doc.comments || ''}</textarea>
+                    </div>
+                </div>
+            `;
+
+            // Setup actions
+            document.getElementById("btn-modal-save").onclick = () => saveComments(doc.transId);
+            document.getElementById("btn-modal-delete").onclick = () => deleteDocument(doc.transId);
+
+            toggleModal(true);
+        }
+
+        // Save modifications
+        function saveComments(transId) {
+            const index = transactions.findIndex(t => t.transId === transId);
+            if (index !== -1) {
+                const remarks = document.getElementById("edit-remarks-box").value;
+                transactions[index].comments = remarks;
+                localStorage.setItem("rafhan_sap_db_standard_v1", JSON.stringify(transactions));
+                renderTable();
+                toggleModal(false);
+                alert("Changes saved to simulated database!");
+            }
+        }
+
+        // Delete document from simulated DB
+        function deleteDocument(transId) {
+            if (confirm("Are you sure you want to delete this transaction from the simulated local database?")) {
+                transactions = transactions.filter(t => t.transId !== transId);
+                localStorage.setItem("rafhan_sap_db_standard_v1", JSON.stringify(transactions));
+                renderTable();
+                toggleModal(false);
+                alert("Document successfully deleted!");
+            }
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById("doc-modal");
+            if (show) {
+                modal.classList.add("active");
+            } else {
+                modal.classList.remove("active");
+            }
+        }
+
+        function closeModal(e) {
+            toggleModal(false);
+        }
+
+        function printModalDoc() {
+            window.print();
+        }
+
+        // Helper Utilities
+        function uuidv4() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function getTimestamp() {
+            const d = new Date();
+            const date = d.toISOString().split("T")[0];
+            const time = d.toTimeString().split(" ")[0];
+            return `${date} ${time}`;
+        }
+
+        // Export HTML report
+        function exportHtmlReport() {
+            const printWindow = window.open("", "_blank");
+            
+            let tableRowsHtml = "";
+            const filtered = transactions.filter(t => {
+                if (activeFilter === 'all') return true;
+                return t.branch === activeFilter;
+            });
+
+            filtered.forEach(t => {
+                tableRowsHtml += `
+                    <tr>
+                        <td style="font-family: monospace; font-size:0.8rem;">${t.transId}</td>
+                        <td>${t.docDate}</td>
+                        <td><strong>${t.docNum}</strong></td>
+                        <td>${t.branch} Plant</td>
+                        <td>${t.docType}</td>
+                        <td>${t.bpName} (${t.bpCode})</td>
+                        <td><strong>${t.currency} ${t.grandTotal.toFixed(2)}</strong></td>
+                        <td>${t.createdBy}</td>
+                        <td>${t.status}</td>
+                    </tr>
+                `;
+            });
+
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Rafhan Maize SAP S/4HANA Database Export - ${activeFilter.toUpperCase()}</title>
+                    <style>
+                        body { font-family: 'Plus Jakarta Sans', sans-serif; padding: 2rem; color: #1e293b; }
+                        h2 { font-family: 'Outfit', sans-serif; font-size: 1.8rem; border-bottom: 2px solid #ca8a04; padding-bottom: 0.5rem; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+                        th, td { padding: 0.75rem 1rem; border-bottom: 1px solid #cbd5e1; text-align: left; font-size: 0.85rem; }
+                        th { background-color: #f1f5f9; font-weight: 700; color: #0f172a; }
+                    </style>
+                </head>
+                <body>
+                    <h2>Rafhan Maize Products Co. Ltd.</h2>
+                    <h3>SAP S/4HANA Middleware - Database Summary Export</h3>
+                    <p>Generated on: ${getTimestamp()} | Filter: Active for ${activeFilter === 'all' ? 'All Plants' : activeFilter + ' Plant'}</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Transaction UUID</th>
+                                <th>Posting Date</th>
+                                <th>Doc Entry No.</th>
+                                <th>Plant/Office</th>
+                                <th>Doc Type</th>
+                                <th>Partner Info</th>
+                                <th>Grand Total</th>
+                                <th>Created By</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRowsHtml}
+                        </tbody>
+                    </table>
+                    <script>
+                        window.onload = function() { window.print(); }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+    </script>
+</body>
+</html>
